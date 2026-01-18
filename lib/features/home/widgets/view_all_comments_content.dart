@@ -1,6 +1,5 @@
 import 'package:dream_catchers/core/models/comment_model.dart';
 import 'package:dream_catchers/core/themes/app_colors.dart';
-import 'package:dream_catchers/features/home/controllers/post_details_controller.dart';
 import 'package:dream_catchers/features/home/widgets/comment_card.dart';
 import 'package:dream_catchers/features/home/widgets/modal_appbar.dart';
 import 'package:flutter/material.dart';
