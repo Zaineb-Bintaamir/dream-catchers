@@ -44,4 +44,14 @@ class FormValidators {
     }
     return null;
   }
+
+  static String? validateUsername(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your username';
+    }
+    if (value.length < 3) {
+      return 'Username must be at least 3 characters';
+    }
+    return null;
+  }
 }

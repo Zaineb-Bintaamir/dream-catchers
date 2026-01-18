@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
             initialRoute: AppRoutes.splash,
             title: AppConstants.appName,
             defaultTransition: Transition.fadeIn,
-            transitionDuration: const Duration(milliseconds: 300),
+            transitionDuration: const Duration(milliseconds: 500),
             debugShowCheckedModeBanner: false,
             theme: AppTheme.light,
             builder: (context, child) {

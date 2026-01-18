@@ -100,21 +100,21 @@ class CustomPrimaryTextField extends StatelessWidget {
           contentPadding: EdgeInsets.symmetric(
               horizontal: 0.035.sw, vertical: verticalPadding ?? 0),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(borderRadius ?? 8.r),
+            borderRadius: BorderRadius.circular(borderRadius ?? 5.r),
             borderSide: BorderSide(
               color: borderColor ?? AppColors.textfieldBorderGrey,
               width: 1.0,
             ),
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(borderRadius ?? 8.r),
+            borderRadius: BorderRadius.circular(borderRadius ?? 5.r),
             borderSide: BorderSide(
               color: borderColor ?? AppColors.textfieldBorderGrey,
               width: 1.0,
             ),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(borderRadius ?? 8.r),
+            borderRadius: BorderRadius.circular(borderRadius ?? 5.r),
             borderSide: BorderSide(
               color: borderColor ?? AppColors.primaryColor,
               width: 1.0,
@@ -152,8 +152,8 @@ class CustomPrimaryTextField extends StatelessWidget {
                   ? GestureDetector(
                       onTap: isPassword ? onTogglePassword : onSuffixClick,
                       child: Container(
-                        color:
-                            backgroundColor ?? AppColors.textfieldHintGreyColor,
+                        color: backgroundColor ??
+                            AppColors.scaffoldBackgroundColor,
                         margin: EdgeInsets.only(right: 0.012.sw),
                         padding: EdgeInsets.only(
                             right: 0.03.sw,
@@ -163,6 +163,9 @@ class CustomPrimaryTextField extends StatelessWidget {
                         child: SvgPicture.asset(
                           suffixIcon!,
                           width: suffixIconSize,
+                          colorFilter: const ColorFilter.mode(
+                              AppColors.textfieldHintGreyColor,
+                              BlendMode.srcIn),
                         ),
                       ))
                   : null),
@@ -172,7 +175,7 @@ class CustomPrimaryTextField extends StatelessWidget {
                 color: AppColors.textfieldHintGreyColor,
                 fontSize: 14.sp,
                 fontFamily: AppFonts.manrope,
-                fontWeight: FontWeight.w400,
+                fontWeight: FontWeight.w500,
               ),
         ),
       ),

@@ -14,61 +14,23 @@ class CustomPrimaryDialog {
         return Dialog(
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(
-            24.r,
+            20.r,
           )),
-          insetPadding: EdgeInsets.symmetric(horizontal: 0.04.sw),
+          insetPadding: EdgeInsets.symmetric(horizontal: 0.05.sw),
           surfaceTintColor: AppColors.whiteColor,
-          backgroundColor: AppColors.whiteColor ,
+          backgroundColor: AppColors.whiteColor,
           child: Container(
-              width: width ?? 0.88.sw,
+              width: width ?? 0.85.sw,
               clipBehavior: Clip.hardEdge,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(24.r),
+                borderRadius: BorderRadius.circular(20.r),
               ),
-              child: Stack(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: horizontalPadding ?? 0.05.sw,
-                      vertical: 0.04.sh,
-                    ),
-                    child: screen,
-                  ),
-                  Positioned(
-                      top: -0.1.sw,
-                      left: -0.1.sw,
-                      child: Container(
-                        width: 0.3.sw,
-                        height: 0.3.sw,
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppColors.primaryColor.withOpacity(0.4)),
-                      )),
-                  Positioned(
-                      top: -0.08.sw,
-                      right: -0.08.sw,
-                      child: Container(
-                        width: 0.24.sw,
-                        height: 0.24.sw,
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppColors.primaryColor.withOpacity(0.4)),
-                      )),
-                  Positioned(
-                      top: 0.018.sh,
-                      right: 0.04.sw,
-                      child: GestureDetector(
-                        onTap: () => Get.back(),
-                        child: SvgPicture.asset(
-                          '',
-                          // AppImages.crossIcon,
-                          width: 0.065.sw,
-                          colorFilter: ColorFilter.mode(
-                              AppColors.primaryColor.withOpacity(0.7),
-                              BlendMode.srcIn),
-                        ),
-                      )),
-                ],
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: horizontalPadding ?? 0.05.sw,
+                  vertical: 0.04.sh,
+                ),
+                child: screen,
               )),
         );
       },

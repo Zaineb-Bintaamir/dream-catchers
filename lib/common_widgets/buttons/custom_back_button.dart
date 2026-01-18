@@ -2,7 +2,7 @@ import 'package:dream_catchers/core/themes/app_colors.dart';
 import 'package:dream_catchers/core/themes/app_images.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 class CustomBackButton extends StatelessWidget {
@@ -26,16 +26,19 @@ class CustomBackButton extends StatelessWidget {
       child: Align(
         alignment: Alignment.centerLeft,
         child: Container(
-          width: 0.13.sw,
-          height: 0.13.sw,
+          width: 0.1.sw,
+          height: 0.1.sw,
           decoration: BoxDecoration(
-              color: backgroundColor ??
-                  AppColors.textfieldBorderGrey.withOpacity(0.04),
-              shape: BoxShape.circle),
+            color: backgroundColor ?? AppColors.whiteColor,
+            border: Border.all(
+              color: AppColors.textfieldBorderGrey,
+              width: 1.0,
+            ),
+            borderRadius: BorderRadius.circular(5.r),
+          ),
           child: Center(
             child: SvgPicture.asset(
-              AppImages.backArrowIcon,
-              // icon ?? AppImages.backArrowIcon,
+              AppImages.arrowBackIcon,
               colorFilter: arrowColor != null
                   ? ColorFilter.mode(arrowColor!, BlendMode.srcIn)
                   : null,
