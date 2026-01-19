@@ -12,6 +12,7 @@ class CustomContainer extends StatelessWidget {
   final double? verticalPadding;
   final bool? showBorder;
   final List<BoxShadow>? shadows;
+  final double? marginBottom;
   const CustomContainer({
     super.key,
     required this.child,
@@ -23,17 +24,20 @@ class CustomContainer extends StatelessWidget {
     this.showBorder,
     this.borderColor,
     this.shadows,
+    this.marginBottom,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
           padding: EdgeInsets.symmetric(
               vertical: verticalPadding ?? 0.02.sh,
               horizontal: horizontalPadding ?? 0.05.sw),
-          margin: EdgeInsets.only(bottom: 0.015.sh),
+          margin: EdgeInsets.only( bottom: marginBottom ?? 0.015.sh),
           decoration: BoxDecoration(
               color: backgroundColor ?? AppColors.whiteColor,
               border: Border.all(

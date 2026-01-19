@@ -1,4 +1,5 @@
 import 'package:dream_catchers/bindings/app_bindings.dart';
+import 'package:dream_catchers/core/services/supabase_service.dart';
 import 'package:dream_catchers/core/themes/app_theme.dart';
 import 'package:dream_catchers/core/utils/app_constants.dart';
 import 'package:dream_catchers/routes/app_router.dart';
@@ -11,6 +12,8 @@ import 'package:get/get.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
+  await SupabaseService.initialize();
 
   runApp(const MyApp());
 }
@@ -33,7 +36,7 @@ class MyApp extends StatelessWidget {
             initialRoute: AppRoutes.splash,
             title: AppConstants.appName,
             defaultTransition: Transition.fadeIn,
-            transitionDuration: const Duration(milliseconds: 300),
+            transitionDuration: const Duration(milliseconds: 500),
             debugShowCheckedModeBanner: false,
             theme: AppTheme.light,
             builder: (context, child) {

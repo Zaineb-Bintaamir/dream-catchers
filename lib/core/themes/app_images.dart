@@ -1,12 +1,4 @@
 class AppImages {
-  static const String backArrowIcon = 'assets/images/back_arrow_icon.svg';
-  static const String checkIcon = 'assets/images/check_icon.svg';
-  static const String infoIcon1 = 'assets/images/info_icon_1.svg';
-  static const String infoIcon2 = 'assets/images/info_icon_2.svg';
-  static const String warningIcon = 'assets/images/warning_icon.svg';
-  static const String errorIcon = 'assets/images/error_icon.svg';
-  static const String successIcon = 'assets/images/success_icon.svg';
-
 //---------------------------------LOGO-----------------------------------------
 
   static const String splashLogoIcon = 'assets/icons/splash_logo_icon.svg';
@@ -17,6 +9,8 @@ class AppImages {
   static const String calendarIcon = 'assets/icons/calendar_icon.svg';
   static const String arrowBackIcon = 'assets/icons/arrow_back_icon.svg';
   static const String forwardArrowIcon = 'assets/icons/forward_arrow_icon.svg';
+  static const String eyeIcon = 'assets/icons/eye_icon.svg';
+  static const String eyeOffIcon = 'assets/icons/eye_off_icon.svg';
 
 //------------------------------BOTTOM NAVBAR-----------------------------------
   static const String homeNavbarIcon = 'assets/icons/home_navbar_icon.svg';

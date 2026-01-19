@@ -22,6 +22,10 @@ class AppColors {
 
   static const Color progressIndicatorInactiveColor = Color(0xFFECECEC);
   static const Color redColor = Color(0xFFFF0000);
+  static const Color navbarInactiveGreyColor = Color(0xFFBEBEBE);
+  static const Color communityCardGreyColor = Color(0xFFF2F2F2);
+  static const Color marketingAdGreyColor = Color(0xFFEDEDED);
+  static const Color commentCardGreyColor = Color(0xFFF8F8F8);
 
 //---------------------------SKELETON COLORS------------------------------------
 
