@@ -106,11 +106,13 @@ class HouseRulesScreen extends GetView<RegistrationController> {
                   ),
                 ),
               ),
-              CustomButton(
-                text: 'I Agree',
-                function: controller.navigateBackFromHouseRules,
-                isLoading: false,
-                width: double.infinity,
+              Obx(
+                () => CustomButton(
+                  text: 'I Agree',
+                  function: controller.navigateBackFromHouseRules,
+                  isLoading: controller.isSignUpLoading.value,
+                  width: double.infinity,
+                ),
               ),
             ],
           ),

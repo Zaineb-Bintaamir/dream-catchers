@@ -1,6 +1,9 @@
+import 'package:dream_catchers/core/services/auth_service.dart';
 import 'package:dream_catchers/core/themes/app_images.dart';
+import 'package:dream_catchers/features/bottom_navbar/screens/profile_screen.dart';
 import 'package:dream_catchers/features/home/controllers/home_controller.dart';
 import 'package:dream_catchers/features/home/screens/home_screen.dart';
+import 'package:dream_catchers/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -39,9 +42,8 @@ class BottomNavbarController extends GetxController {
       case 2:
         return Container();
       case 3:
-        return Container();
-      case 4:
-        return Container();
+        return const ProfileScreen();
+
       default:
         return const SizedBox();
     }
@@ -73,5 +75,16 @@ class BottomNavbarController extends GetxController {
       return;
     }
     currentIndex.value = 0;
+  }
+
+//--------------------------------LOGOUT-----------------------------------------
+
+  Future<void> logout() async {
+    try {
+      await AuthService.signOut();
+      Get.offAllNamed(AppRoutes.getStarted);
+    } catch (e) {
+      Get.log('Logout error: $e');
+    }
   }
 }

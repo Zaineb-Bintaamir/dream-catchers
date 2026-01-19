@@ -1,6 +1,5 @@
 import 'package:dream_catchers/core/models/comment_model.dart';
 import 'package:dream_catchers/core/themes/app_colors.dart';
-import 'package:dream_catchers/features/home/controllers/post_details_controller.dart';
 import 'package:dream_catchers/features/home/widgets/comment_card.dart';
 import 'package:dream_catchers/features/home/widgets/modal_appbar.dart';
 import 'package:flutter/material.dart';
@@ -9,14 +8,10 @@ import 'package:get/get.dart';
 
 class ViewAllCommentsContent extends StatelessWidget {
   final List<CommentModel> comments;
-  final Function(String) onLikeComment;
-  final Function(String) onDislikeComment;
 
   const ViewAllCommentsContent({
     super.key,
     required this.comments,
-    required this.onLikeComment,
-    required this.onDislikeComment,
   });
 
   @override
@@ -44,7 +39,7 @@ class ViewAllCommentsContent extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final CommentModel comment = comments[index];
                       return Padding(
-                        padding: EdgeInsets.only(bottom: 0.02.sh),
+                        padding: EdgeInsets.only(bottom: 0.01.sh),
                         child: CommentCard(
                           comment: comment,
                           shadows: const [
@@ -56,8 +51,8 @@ class ViewAllCommentsContent extends StatelessWidget {
                             )
                           ],
                           backgroundColor: AppColors.whiteColor,
-                          onLike: () => onLikeComment(comment.id),
-                          onDislike: () => onDislikeComment(comment.id),
+                          onLike: () {},
+                          onDislike: () {},
                         ),
                       );
                     },

@@ -16,17 +16,14 @@ class PostDetailsModal {
         post: controller.post,
         comments: controller.comments,
         commentController: controller.commentController,
+        isLoadingComments: controller.isLoadingComments,
         onViewAllComments: () => controller.onViewAllComments(),
         onLikePost: () => controller.onLikePost(),
-        onDislikePost: () => controller.onDislikePost(),
         onComment: () {},
         onAddComment: () => controller.addComment(),
         onShare: () =>
             controller.postsController.onSharePost(controller.post.id),
         isPostLiked: controller.isPostLiked,
-        isPostDisliked: controller.isPostDisliked,
-        onLikeComment: (commentId) => controller.onLikeComment(commentId),
-        onDislikeComment: (commentId) => controller.onDislikeComment(commentId),
         onMenuTap: (position) => controller.postsController
             .showPostOptionsMenu(context, controller.post, position),
       ),

@@ -1,7 +1,6 @@
 import 'package:dream_catchers/common_widgets/appbars/custom_appbar.dart';
 import 'package:dream_catchers/common_widgets/buttons/custom_button.dart';
 import 'package:dream_catchers/common_widgets/inputs/custom_primary_textfield.dart';
-import 'package:dream_catchers/core/themes/app_colors.dart';
 import 'package:dream_catchers/features/home/controllers/create_post_controller.dart';
 import 'package:dream_catchers/features/home/widgets/media_upload_widget.dart';
 import 'package:flutter/material.dart';

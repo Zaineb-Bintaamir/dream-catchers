@@ -1,6 +1,6 @@
 import 'package:dream_catchers/common_widgets/appbars/custom_appbar.dart';
 import 'package:dream_catchers/common_widgets/buttons/custom_button.dart';
-import 'package:dream_catchers/common_widgets/progress_indicators/custom_progress_indicator.dart';
+import 'package:dream_catchers/common_widgets/progress_indicators/custom_linear_indicator.dart';
 import 'package:dream_catchers/core/themes/app_colors.dart';
 import 'package:dream_catchers/features/auth/controllers/registration_controller.dart';
 import 'package:dream_catchers/features/auth/widgets/birthday_step_widget.dart';

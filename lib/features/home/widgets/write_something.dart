@@ -21,6 +21,7 @@ class WriteSomething extends StatelessWidget {
       horizontalPadding: 0.04.sw,
       backgroundColor: AppColors.whiteColor,
       borderColor: AppColors.textfieldBorderGrey,
+      marginBottom: 0.025.sh,
       showBorder: false,
       child: Row(
         children: [
