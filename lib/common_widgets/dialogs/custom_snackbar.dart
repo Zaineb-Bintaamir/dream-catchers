@@ -34,8 +34,8 @@ class CustomSnackbar {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              width: 0.08.sw,
-              height: 0.08.sw,
+              width: 0.05.sw,
+              height: 0.05.sw,
               decoration: BoxDecoration(
                 color: status == 'success'
                     ? const Color(0xFF4E8D7C)
@@ -45,32 +45,6 @@ class CustomSnackbar {
                             ? const Color(0xFFFC8621)
                             : AppColors.primaryColor,
                 shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: SvgPicture.asset(
-                  status == 'success'
-                      ? ''
-                      // AppImages.checkIcon
-                      : status == 'error'
-                          ? ''
-                          // AppImages.crossIcon
-                          : status == 'warning'
-                              ? ''
-                              // AppImages.infoIcon1
-                              : '',
-                  // AppImages.infoIcon2
-                  width: status == 'success'
-                      ? 0.03.sw
-                      : status == 'error'
-                          ? 0.05.sw
-                          : status == 'warning'
-                              ? 0.006.sw
-                              : 0.006.sw,
-                  colorFilter: const ColorFilter.mode(
-                    AppColors.whiteColor,
-                    BlendMode.srcIn,
-                  ),
-                ),
               ),
             ),
             SizedBox(width: 0.03.sw),

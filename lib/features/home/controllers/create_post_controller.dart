@@ -1,6 +1,7 @@
 import 'package:dream_catchers/common_widgets/dialogs/custom_snackbar.dart';
 import 'package:dream_catchers/core/methods/media_handlers.dart';
 import 'package:dream_catchers/core/models/community_model.dart';
+import 'package:dream_catchers/core/services/posts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -15,13 +16,6 @@ class CreatePostController extends GetxController {
     if (arguments is CommunityModel) {
       community = arguments;
     }
-  }
-
-  @override
-  void onClose() {
-    titleController.dispose();
-    descriptionController.dispose();
-    super.onClose();
   }
 
 //-----------------------------TITLE/DESCRIPTION--------------------------------
@@ -59,16 +53,54 @@ class CreatePostController extends GetxController {
     selectedMedia.removeAt(index);
   }
 
+  String _getMediaTypeFromExtension(String filePath) {
+    final String extension = filePath.split('.').last.toLowerCase();
+
+    const List<String> imageExtensions = [
+      'jpg',
+      'jpeg',
+      'png',
+      'gif',
+      'bmp',
+      'webp',
+      'svg',
+      'heic',
+      'heif',
+    ];
+
+    const List<String> videoExtensions = [
+      'mp4',
+      'mov',
+      'avi',
+      'mkv',
+      'webm',
+      'flv',
+      'wmv',
+      'm4v',
+      '3gp',
+      'mpg',
+      'mpeg',
+    ];
+
+    if (imageExtensions.contains(extension)) {
+      return 'image';
+    } else if (videoExtensions.contains(extension)) {
+      return 'video';
+    } else {
+      return 'image';
+    }
+  }
+
 //------------------------------CREATE POST-------------------------------------
 
   Future<void> createPost() async {
-    if (titleController.text.trim().isEmpty &&
-        descriptionController.text.trim().isEmpty &&
-        selectedMedia.isEmpty) {
+    final String content = descriptionController.text.trim();
+    final String title = titleController.text.trim();
+    if (title.isEmpty && content.isEmpty && selectedMedia.isEmpty) {
       CustomSnackbar.show(
         status: 'error',
         title: 'Error',
-        subtitle: 'Please fill in title, description or media',
+        subtitle: 'Please add content or media',
       );
       return;
     }
@@ -76,14 +108,42 @@ class CreatePostController extends GetxController {
     isLoading.value = true;
 
     try {
-      await Future.delayed(const Duration(seconds: 1));
+      String? mediaUrl;
+      String? mediaType;
+
+      if (selectedMedia.isNotEmpty) {
+        final XFile mediaFile = selectedMedia.first;
+        final fileName =
+            '${DateTime.now().millisecondsSinceEpoch}_${mediaFile.name}';
+
+        mediaType = _getMediaTypeFromExtension(mediaFile.path);
+
+        mediaUrl = await PostsService.uploadMedia(
+          filePath: mediaFile.path,
+          fileName: fileName,
+          mediaType: mediaType,
+        );
+      }
+
+      await PostsService.createPost(
+        content: content.isEmpty ? null : content,
+        mediaUrl: mediaUrl,
+        title: title.isEmpty ? null : title,
+        mediaType: mediaType,
+      );
       Get.back();
+
+      CustomSnackbar.show(
+        status: 'success',
+        title: 'Success',
+        subtitle: 'Post created successfully',
+      );
     } catch (e) {
       Get.log('Error creating post: $e');
       CustomSnackbar.show(
         status: 'error',
         title: 'Error',
-        subtitle: 'Failed to create post',
+        subtitle: 'Failed to create post. Please try again.',
       );
     } finally {
       isLoading.value = false;

@@ -1,7 +1,8 @@
 import 'package:dream_catchers/common_widgets/dialogs/custom_primary_dialog.dart';
+import 'package:dream_catchers/common_widgets/dialogs/custom_snackbar.dart';
 import 'package:dream_catchers/core/models/community_model.dart';
 import 'package:dream_catchers/core/models/post_model.dart';
-import 'package:dream_catchers/features/home/data/posts.dart';
+import 'package:dream_catchers/core/services/posts_service.dart';
 import 'package:dream_catchers/features/home/widgets/block_confirmation_dialog.dart';
 import 'package:dream_catchers/features/home/widgets/post_details_modal.dart';
 import 'package:dream_catchers/features/home/widgets/post_options_popup_menu.dart';
@@ -14,7 +15,13 @@ import 'package:share_plus/share_plus.dart';
 class PostsController extends GetxController {
   late final CommunityModel community;
   final RxList<PostModel> posts = <PostModel>[].obs;
+  final RxBool isLoading = false.obs;
+  final RxBool isLoadingMore = false.obs;
+  int _currentPage = 0;
+  bool _hasMorePosts = true;
   int? _adPosition;
+
+  bool get hasMorePosts => _hasMorePosts;
 
   @override
   void onInit() {
@@ -23,14 +30,15 @@ class PostsController extends GetxController {
     if (arguments is CommunityModel) {
       community = arguments;
       loadPosts();
-      _calculateAdPosition();
     }
   }
 
 //--------------------------------NAVIGATIONS-----------------------------------
 
   void navigateToCreatePost() {
-    Get.toNamed(AppRoutes.createPost, arguments: community);
+    Get.toNamed(AppRoutes.createPost, arguments: community)?.then((_) {
+      refreshPosts();
+    });
   }
 
 //-------------------------------MARKETING ADS----------------------------------
@@ -48,60 +56,113 @@ class PostsController extends GetxController {
 
 //------------------------------------POSTS-------------------------------------
 
-  void loadPosts() {
-    posts.value = PostsData.getPostsForCommunity(community.id);
-  }
+  Future<void> loadPosts({bool refresh = false}) async {
+    if (refresh) {
+      _currentPage = 0;
+      _hasMorePosts = true;
+      posts.clear();
+    }
 
-  void onLikePost(String postId) {
-    final postIndex = posts.indexWhere((post) => post.id == postId);
-    if (postIndex != -1) {
-      final post = posts[postIndex];
-      final updatedPost = PostModel(
-        id: post.id,
-        userId: post.userId,
-        userName: post.userName,
-        userAvatar: post.userAvatar,
-        timeAgo: post.timeAgo,
-        content: post.content,
-        likes: post.likes + 1,
-        comments: post.comments,
-        shares: post.shares,
-        dislikes: post.dislikes,
-      );
-      posts[postIndex] = updatedPost;
+    if (!_hasMorePosts || isLoading.value) {
+      return;
+    }
+
+    isLoading.value = true;
+
+    try {
+      final List<PostModel> newPosts =
+          await PostsService.getPosts(page: _currentPage, sortBy: 'trending');
+
+      if (refresh) {
+        posts.value = newPosts;
+      } else {
+        posts.addAll(newPosts);
+      }
+
+      if (newPosts.length < 3) {
+        _hasMorePosts = false;
+      } else {
+        _currentPage++;
+      }
+
+      _calculateAdPosition();
+    } catch (e) {
+      Get.log('Error loading posts: $e');
+    } finally {
+      isLoading.value = false;
     }
   }
 
-  void onDislikePost(String postId) {
-    final postIndex = posts.indexWhere((post) => post.id == postId);
-    if (postIndex != -1) {
-      final post = posts[postIndex];
-      final updatedPost = PostModel(
-        id: post.id,
-        userId: post.userId,
-        userName: post.userName,
-        userAvatar: post.userAvatar,
-        timeAgo: post.timeAgo,
-        content: post.content,
-        likes: post.likes,
-        comments: post.comments,
-        shares: post.shares,
-        dislikes: post.dislikes + 1,
-      );
-      posts[postIndex] = updatedPost;
+  Future<void> loadMorePosts() async {
+    if (isLoadingMore.value || !_hasMorePosts) {
+      return;
+    }
+
+    isLoadingMore.value = true;
+
+    try {
+      final List<PostModel> newPosts =
+          await PostsService.getPosts(page: _currentPage, sortBy: 'trending');
+
+      posts.addAll(newPosts);
+
+      if (newPosts.length < 3) {
+        _hasMorePosts = false;
+      } else {
+        _currentPage++;
+      }
+    } catch (e) {
+      Get.log('Error loading more posts: $e');
+    } finally {
+      isLoadingMore.value = false;
     }
   }
 
-  void onCommentPost(String postId) {}
+  Future<void> refreshPosts() async {
+    await loadPosts(refresh: true);
+  }
 
-  void onSharePost(String postId) {
-    Get.log('onSharePost: $postId');
-    final postIndex = posts.indexWhere((post) => post.id == postId);
-    if (postIndex != -1) {
-      final post = posts[postIndex];
-      SharePlus.instance.share(ShareParams(
-        text: 'Check out this post by ${post.userName}: ${post.content}',
-      ));
+  Future<void> onLikePost(String postId) async {
+    try {
+      await PostsService.likePost(postId);
+
+      final postIndex = posts.indexWhere((post) => post.id == postId);
+      if (postIndex != -1) {
+        await refreshPosts();
+      }
+    } catch (e) {
+      Get.log('Error liking post: $e');
+      CustomSnackbar.show(
+        status: 'error',
+        title: 'Error',
+        subtitle: 'Failed to like post. Please try again.',
+      );
+    }
+  }
+
+  Future<void> onSharePost(String postId) async {
+    try {
+      final postIndex = posts.indexWhere((post) => post.id == postId);
+      if (postIndex != -1) {
+        final post = posts[postIndex];
+
+        await PostsService.sharePost(postId);
+
+        await SharePlus.instance.share(
+          ShareParams(text: post.content ?? 'Check out this post!'),
+        );
+
+        await refreshPosts();
+      }
+    } catch (e) {
+      Get.log('Error sharing post: $e');
+      final postIndex = posts.indexWhere((post) => post.id == postId);
+      if (postIndex != -1) {
+        final post = posts[postIndex];
+        await SharePlus.instance.share(
+          ShareParams(text: post.content ?? 'Check out this post!'),
+        );
+      }
     }
   }
 

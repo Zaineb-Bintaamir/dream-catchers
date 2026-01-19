@@ -12,8 +12,6 @@ class ViewAllCommentsModal {
       context,
       ViewAllCommentsContent(
         comments: controller.comments,
-        onLikeComment: (commentId) => controller.onLikeComment(commentId),
-        onDislikeComment: (commentId) => controller.onDislikeComment(commentId),
       ),
     );
   }

@@ -23,6 +23,7 @@ class PostCard extends StatelessWidget {
   final double? timeFontSize;
   final double? contentFontSize;
   final bool? showShareButton;
+  final bool? showBoxShadow;
   const PostCard({
     super.key,
     required this.post,
@@ -39,18 +40,29 @@ class PostCard extends StatelessWidget {
     this.timeFontSize,
     this.contentFontSize,
     this.showShareButton,
+    this.showBoxShadow,
   });
 
   @override
   Widget build(BuildContext context) {
     return CustomContainer(
       onTap: onPostTap ?? () {},
-      borderRadius: 0.r,
+      borderRadius: 8.r,
       verticalPadding: 0.014.sh,
       horizontalPadding: horizontalPadding ?? 0.03.sw,
       backgroundColor: AppColors.scaffoldBackgroundColor,
       borderColor: AppColors.scaffoldBackgroundColor,
       showBorder: false,
+      shadows: showBoxShadow ?? true
+          ? const [
+              BoxShadow(
+                color: Color(0x0C000000),
+                blurRadius: 20,
+                offset: Offset(0, 1),
+                spreadRadius: 0,
+              )
+            ]
+          : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -70,7 +82,7 @@ class PostCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      post.userName,
+                      post.userName ?? 'Anonymous',
                       style: TextStyle(
                         color: AppColors.blackColor,
                         fontSize: nameFontSize ?? 14.sp,
@@ -87,7 +99,7 @@ class PostCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      post.timeAgo,
+                      post.timeAgo ?? 'just now',
                       style: TextStyle(
                         color: AppColors.textfieldHintGreyColor,
                         fontSize: timeFontSize ?? 12.sp,
@@ -122,21 +134,38 @@ class PostCard extends StatelessWidget {
               )
             ],
           ),
-          SizedBox(height: 0.015.sh),
-          Text(
-            post.content,
-            style: TextStyle(
-              color: AppColors.blackColor.withOpacity(0.8),
-              fontSize: contentFontSize ?? 12.sp,
-              fontWeight: FontWeight.w500,
+          if (post.title != null && post.title!.isNotEmpty) ...[
+            SizedBox(height: 0.015.sh),
+            Text(
+              post.title!,
+              style: TextStyle(
+                color: AppColors.blackColor,
+                fontSize: contentFontSize ?? 12.sp,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
+          ],
+          if (post.content != null && post.content!.isNotEmpty) ...[
+            SizedBox(height: 0.015.sh),
+            Text(
+              post.content!,
+              style: TextStyle(
+                color: AppColors.blackColor.withOpacity(0.8),
+                fontSize: contentFontSize ?? 12.sp,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+          if (post.mediaUrl != null && post.mediaUrl!.isNotEmpty) ...[
+            SizedBox(height: 0.015.sh),
+            _buildMediaWidget(),
+          ],
           SizedBox(height: 0.02.sh),
           Row(
             children: [
               ActionButton(
                 icon: isPostLiked ? AppImages.likedIcon : AppImages.likeIcon,
-                count: post.likes,
+                count: post.likesCount,
                 onTap: onLike,
               ),
               SizedBox(width: 0.05.sw),
@@ -144,20 +173,20 @@ class PostCard extends StatelessWidget {
                 icon: isPostDisliked
                     ? AppImages.dislikedIcon
                     : AppImages.dislikeIcon,
-                count: post.dislikes,
+                count: 0,
                 onTap: onDislike,
               ),
               SizedBox(width: 0.05.sw),
               ActionButton(
                 icon: AppImages.commentsIcon,
-                count: post.comments,
+                count: post.commentsCount,
                 onTap: onComment,
               ),
               if (showShareButton ?? false) ...[
                 const Spacer(),
                 ActionButton(
                   icon: AppImages.shareIcon,
-                  count: post.shares,
+                  count: post.sharesCount,
                   onTap: onShare,
                 ),
               ]
@@ -166,5 +195,48 @@ class PostCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildMediaWidget() {
+    if (post.mediaUrl == null || post.mediaUrl!.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    if (post.mediaType == 'video') {
+      return Stack(
+        alignment: Alignment.center,
+        children: [
+          CustomCachedNetworkImage(
+            image: post.mediaUrl,
+            width: double.infinity,
+            height: 0.3.sh,
+            boxFit: BoxFit.cover,
+          ),
+          Container(
+            width: 0.15.sw,
+            height: 0.15.sw,
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.6),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.play_arrow,
+              color: Colors.white,
+              size: 0.08.sw,
+            ),
+          ),
+        ],
+      );
+    } else {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(8.r),
+        child: CustomCachedNetworkImage(
+          image: post.mediaUrl,
+          width: double.infinity,
+          height: 0.3.sh,
+          boxFit: BoxFit.cover,
+        ),
+      );
+    }
   }
 }

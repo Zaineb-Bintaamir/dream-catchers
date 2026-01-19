@@ -1,7 +1,9 @@
+import 'package:dream_catchers/common_widgets/dialogs/custom_snackbar.dart';
 import 'package:dream_catchers/core/models/comment_model.dart';
 import 'package:dream_catchers/core/models/post_model.dart';
+import 'package:dream_catchers/core/services/comments_service.dart';
+import 'package:dream_catchers/core/services/posts_service.dart';
 import 'package:dream_catchers/features/home/controllers/posts_controller.dart';
-import 'package:dream_catchers/features/home/data/comments.dart';
 import 'package:dream_catchers/features/home/widgets/view_all_comments_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,71 +13,99 @@ class PostDetailsController extends GetxController {
 
 //-------------------------------POST DETAILS-----------------------------------
 
-  late final PostModel post;
+  late PostModel post;
   final RxList<CommentModel> comments = <CommentModel>[].obs;
   final RxBool isPostLiked = false.obs;
-  final RxBool isPostDisliked = false.obs;
+  final RxBool isLoadingComments = false.obs;
+  final RxBool isLoadingMoreComments = false.obs;
   final TextEditingController commentController = TextEditingController();
+
+  int _currentCommentPage = 0;
+  bool _hasMoreComments = true;
 
   void initialize(PostModel postData) {
     post = postData;
+    isPostLiked.value = post.isLiked ?? false;
     loadComments();
   }
 
-  void loadComments() {
-    comments.value = CommentsData.getCommentsForPost(post.id);
-  }
-
-  void onLikePost() {
-    isPostLiked.value = !isPostLiked.value;
-    if (isPostDisliked.value) {
-      isPostDisliked.value = false;
+  Future<void> loadComments({bool refresh = false}) async {
+    if (refresh) {
+      _currentCommentPage = 0;
+      _hasMoreComments = true;
+      comments.clear();
     }
-  }
 
-  void onDislikePost() {
-    isPostDisliked.value = !isPostDisliked.value;
-    if (isPostLiked.value) {
-      isPostLiked.value = false;
+    if (!_hasMoreComments || isLoadingComments.value) {
+      return;
     }
-  }
-//-----------------------------------COMMENTS-----------------------------------
 
-  void onLikeComment(String commentId) {
-    final commentIndex =
-        comments.indexWhere((comment) => comment.id == commentId);
-    if (commentIndex != -1) {
-      final comment = comments[commentIndex];
-      final updatedComment = CommentModel(
-        id: comment.id,
-        userId: comment.userId,
-        userName: comment.userName,
-        userAvatar: comment.userAvatar,
-        timeAgo: comment.timeAgo,
-        content: comment.content,
-        likes: comment.likes + 1,
-        dislikes: comment.dislikes,
+    isLoadingComments.value = true;
+
+    try {
+      final List<CommentModel> newComments = await CommentsService.getComments(
+        postId: post.id,
+        page: _currentCommentPage,
       );
-      comments[commentIndex] = updatedComment;
+
+      if (refresh) {
+        comments.value = newComments;
+      } else {
+        comments.addAll(newComments);
+      }
+
+      if (newComments.length < 20) {
+        _hasMoreComments = false;
+      } else {
+        _currentCommentPage++;
+      }
+    } catch (e) {
+      Get.log('Error loading comments: $e');
+    } finally {
+      isLoadingComments.value = false;
     }
   }
 
-  void onDislikeComment(String commentId) {
-    final commentIndex =
-        comments.indexWhere((comment) => comment.id == commentId);
-    if (commentIndex != -1) {
-      final comment = comments[commentIndex];
-      final updatedComment = CommentModel(
-        id: comment.id,
-        userId: comment.userId,
-        userName: comment.userName,
-        userAvatar: comment.userAvatar,
-        timeAgo: comment.timeAgo,
-        content: comment.content,
-        likes: comment.likes,
-        dislikes: comment.dislikes + 1,
+  Future<void> loadMoreComments() async {
+    if (isLoadingMoreComments.value || !_hasMoreComments) {
+      return;
+    }
+
+    isLoadingMoreComments.value = true;
+
+    try {
+      final List<CommentModel> newComments = await CommentsService.getComments(
+        postId: post.id,
+        page: _currentCommentPage,
       );
-      comments[commentIndex] = updatedComment;
+
+      comments.addAll(newComments);
+
+      if (newComments.length < 20) {
+        _hasMoreComments = false;
+      } else {
+        _currentCommentPage++;
+      }
+    } catch (e) {
+      Get.log('Error loading more comments: $e');
+    } finally {
+      isLoadingMoreComments.value = false;
+    }
+  }
+
+  Future<void> onLikePost() async {
+    try {
+      await PostsService.likePost(post.id);
+      isPostLiked.value = !isPostLiked.value;
+
+      await postsController.refreshPosts();
+    } catch (e) {
+      Get.log('Error liking post: $e');
+      CustomSnackbar.show(
+        status: 'error',
+        title: 'Error',
+        subtitle: 'Failed to like post. Please try again.',
+      );
     }
   }
 
@@ -83,26 +113,29 @@ class PostDetailsController extends GetxController {
     ViewAllCommentsModal.show(Get.context!);
   }
 
-  void addComment() {
+  Future<void> addComment() async {
     final String content = commentController.text.trim();
     if (content.isEmpty) {
       return;
     }
 
-    final CommentModel newComment = CommentModel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      userId: 'current_user',
-      userName: 'You',
-      userAvatar: 'https://i.pravatar.cc/150?img=3',
-      timeAgo: 'now',
-      content: content,
-      likes: 0,
-      dislikes: 0,
-    );
+    try {
+      final CommentModel newComment = await CommentsService.createComment(
+        postId: post.id,
+        content: content,
+      );
 
-    comments.insert(0, newComment);
-    commentController.clear();
+      comments.insert(0, newComment);
+      commentController.clear();
+
+      await postsController.refreshPosts();
+    } catch (e) {
+      Get.log('Error adding comment: $e');
+      CustomSnackbar.show(
+        status: 'error',
+        title: 'Error',
+        subtitle: 'Failed to add comment. Please try again.',
+      );
+    }
   }
-
-  void onReplyComment(String commentId) {}
 }

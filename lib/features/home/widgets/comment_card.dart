@@ -51,7 +51,7 @@ class CommentCard extends StatelessWidget {
               ),
               SizedBox(width: 0.03.sw),
               Text(
-                comment.userName,
+                comment.userName ?? 'Anonymous',
                 style: TextStyle(
                   color: AppColors.blackColor,
                   fontSize: 14.sp,
@@ -68,7 +68,7 @@ class CommentCard extends StatelessWidget {
                 ),
               ),
               Text(
-                comment.timeAgo,
+                comment.timeAgo ?? 'just now',
                 style: TextStyle(
                   color: AppColors.textfieldHintGreyColor,
                   fontSize: 11.sp,
@@ -102,13 +102,13 @@ class CommentCard extends StatelessWidget {
               const Spacer(),
               ActionButton(
                 icon: AppImages.likeIcon,
-                count: comment.likes,
+                count: 0,
                 onTap: onLike,
               ),
               SizedBox(width: 0.05.sw),
               ActionButton(
                 icon: AppImages.dislikeIcon,
-                count: comment.dislikes,
+                count: 0,
                 onTap: onDislike,
               ),
             ],
