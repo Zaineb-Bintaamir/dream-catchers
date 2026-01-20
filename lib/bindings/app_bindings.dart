@@ -12,23 +12,7 @@ import 'package:get/get.dart';
 class AppBindings extends Bindings {
   @override
   void dependencies() {
-    // Get.put(TokenController(), permanent: true);
-    // Get.put(NotificationNavigationController(), permanent: true);
-
-    // Get.put(ApiService(), permanent: true);
-    // Get.put(LocalStorage(), permanent: true);
-    // Get.put(LocalDatabase(), permanent: true);
-
-    // Get.put(SseService(), permanent: true);
-
-    // Get.put(StudentProfileController(), permanent: true);
-    // Get.put(StudentProfileRepository(), permanent: true);
-    // Get.put(AppconfigController(), permanent: true);
-
     Get.put(SplashController());
-
-    // Get.lazyPut(() => AuthRepository());
-
     Get.lazyPut(() => AuthController(), fenix: true);
     Get.lazyPut(() => RegistrationController(), fenix: true);
     Get.lazyPut(() => BottomNavbarController(), fenix: true);

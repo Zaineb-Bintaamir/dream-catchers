@@ -49,7 +49,6 @@ class ReportScreen extends GetView<PostDetailsController> {
                       () => ReportCategoryItem(
                         category: category,
                         isSelected: 'Spam' == category,
-                        // onTap: () => controller.selectCategory(category),
                         onTap: () {},
                       ),
                     );
